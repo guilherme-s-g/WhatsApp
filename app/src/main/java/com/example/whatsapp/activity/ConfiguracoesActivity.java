@@ -203,7 +203,7 @@ public class ConfiguracoesActivity extends AppCompatActivity
     private void atualizarFotoUsuario(Uri url)
     {
         Boolean retorno = UsuarioFirebase.atualizarFotoUsuario(url);
-
+        //Retorno
         if (retorno)
         {
         usuarioLogado.setFoto(url.toString());
