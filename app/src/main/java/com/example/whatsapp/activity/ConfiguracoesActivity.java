@@ -96,7 +96,6 @@ public class ConfiguracoesActivity extends AppCompatActivity
                 if (i.resolveActivity(getPackageManager()) == null)
                 {
                 startActivityForResult(i,SELECAO_CAMERA);
-
                 }
             }
         });

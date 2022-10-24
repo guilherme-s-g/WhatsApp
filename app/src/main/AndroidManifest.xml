@@ -4,10 +4,11 @@
 
     <uses-feature
         android:name="android.hardware.camera"
-        android:required="true"
-        />
-    <uses-permission-sdk-23 android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission-sdk-23 android:name="android.permission.CAMERA"/>
+        android:required="true" />
+
+    <uses-permission-sdk-23 android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission-sdk-23 android:name="android.permission.CAMERA" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -19,11 +20,21 @@
         android:theme="@style/Theme.WhatsApp"
         tools:targetApi="31">
         <activity
+            android:name=".activity.ChatActivity"
+            android:exported="false"
+            android:label="@string/title_activity_chat"
+            android:parentActivityName=".activity.MainActivity"
+            android:theme="@style/Theme.WhatsApp.NoActionBar">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".activity.ConfiguracoesActivity"
             android:exported="false"
             android:label="Configurações"
-            android:theme="@style/Theme.WhatsApp.NoActionBar"
-            android:parentActivityName=".activity.MainActivity">
+            android:parentActivityName=".activity.MainActivity"
+            android:theme="@style/Theme.WhatsApp.NoActionBar">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
