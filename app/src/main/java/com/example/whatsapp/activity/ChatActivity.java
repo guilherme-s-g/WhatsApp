@@ -7,6 +7,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -21,6 +23,9 @@ import com.example.whatsapp.helper.Base64Custom;
 import com.example.whatsapp.helper.UsuarioFirebase;
 import com.example.whatsapp.model.Mensagem;
 import com.example.whatsapp.model.Usuario;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 
 import java.util.ArrayList;
@@ -37,6 +42,9 @@ public class ChatActivity extends AppCompatActivity
     private TextView textViewNome;
     private CircleImageView circleImageViewFoto;
     private Usuario usuarioDestinatario;
+    private DatabaseReference database;
+    private  DatabaseReference mensagensRef;
+    private ChildEventListener childEventListenerMensagens;
     private EditText editMensagem;
 
     //identificador usuarios remetente e destinatario
@@ -96,13 +104,16 @@ public class ChatActivity extends AppCompatActivity
         //Configuração adapter
         adapter = new MensagensAdapter(mensagens, getApplicationContext());
 
-
-
         //Configuração recyclerview
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerMensagens.setLayoutManager(layoutManager);
         recyclerMensagens.setHasFixedSize(true);
         recyclerMensagens.setAdapter(adapter);
+
+        database = ConfiguracaoFirebase.getFirebaseDatabase();
+        mensagensRef = database.child("mensagens")
+                .child(idUsuarioRemetente)
+                .child(idUsuarioDestinatario);
 
     }
 
@@ -118,6 +129,9 @@ public class ChatActivity extends AppCompatActivity
 
             //Salvar mensagem para o remetente
             salvarMensagem(idUsuarioRemetente,idUsuarioDestinatario, mensagem);
+
+            //Salvar mensagem para o destinatario
+            salvarMensagem(idUsuarioDestinatario,idUsuarioRemetente, mensagem);
         }
         else
         {
@@ -135,7 +149,60 @@ public class ChatActivity extends AppCompatActivity
                 .push()
                 .setValue(msg);
 
+        //Limpar texto
         editMensagem.setText("");
+    }
+
+    @Override
+    protected void onStart()
+    {
+        super.onStart();
+        recuperarMensagens();
+    }
+
+    @Override
+    protected void onStop()
+    {
+        super.onStop();
+        mensagensRef.removeEventListener(childEventListenerMensagens);
+    }
+
+    private void recuperarMensagens()
+    {
+        childEventListenerMensagens =  mensagensRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName)
+            {
+                Mensagem mensagem =  snapshot.getValue(Mensagem.class);
+                mensagens.add(mensagem);
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName)
+            {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot)
+            {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName)
+            {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error)
+            {
+
+            }
+        });
+
     }
 
 }
